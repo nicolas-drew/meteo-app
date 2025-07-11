@@ -12,7 +12,7 @@
   background: linear-gradient(to bottom, #0b3c5d, #0b3c5dd0);
   color: white;
   text-align: center;
-  height: 100vh;
+  flex: 1;
 }
 
 .hero h1 {
