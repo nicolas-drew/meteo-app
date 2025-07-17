@@ -3,6 +3,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
+  font-family: "Segoe UI", sans-serif;
 }
 
 .app-container {
@@ -15,4 +16,26 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+body.light {
+  color: #202020;
+  background: #2980b9;
+  background: linear-gradient(to right, #2980b9, #6dd5fa, #ffffff);
+}
+
+body.dark {
+  color: white;
+  background: #1e3c72;
+  background: linear-gradient(to right, #1e3c72, #1e3c72, #2a5298);
+}
+
+body.light .navbar-connexion,
+body.light .footer a {
+  color: #202020
+}
+
+body.dark .navbar-connexion,
+body.dark .footer a {
+  color: white;
 }

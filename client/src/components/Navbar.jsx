@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
 import "./Navbar.css";
 import { useState, useEffect } from "react";
+
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -15,8 +17,21 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-logo">Weather</div>
+
+      <div className="navbar-center">
+        <Link to="/">Accueil</Link>
+        <a href="#" className="navbar-link">
+          Page2
+        </a>
+        <a href="#" className="navbar-link">
+          Page3
+        </a>
+      </div>
+
       <div className="navbar-actions">
-        <button className="navbar-link">Connexion</button>
+        <Link to="/login" className="navbar-connexion">Connexion</Link>
+        <Link to="/signup" className="navbar-inscription">Inscription</Link>
+
         <div className="toggle-switch" onClick={toggleTheme}>
           <div className={`toggle-thumb ${darkMode ? "right" : ""}`}>
             {darkMode ? (

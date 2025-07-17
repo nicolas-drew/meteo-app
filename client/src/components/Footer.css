@@ -9,17 +9,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background: linear-gradient(to right, #043f64, #042d4f);
-  color: white;
   font-family: "Segoe UI", sans-serif;
   font-size: 0.9rem;
 }
 
 .footer a {
-  color: white;
   margin-left: 1rem;
   text-decoration: none;
-  font-weight: 500;
 }
 
 .footer a:hover {
