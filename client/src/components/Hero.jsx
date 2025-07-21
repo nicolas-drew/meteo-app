@@ -1,4 +1,4 @@
-import "./Hero.css";
+import "../styles/Hero.css";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
 

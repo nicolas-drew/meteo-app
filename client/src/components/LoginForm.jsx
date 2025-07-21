@@ -1,5 +1,5 @@
 import { FcGoogle } from "react-icons/fc";
-import "./Form.css";
+import "../styles/Form.css";
 import { Link } from "react-router-dom";
 
 const LoginForm = () => {

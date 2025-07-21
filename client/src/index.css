@@ -18,6 +18,12 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-top: 80px;
+  min-height: calc(100vh - 80px);
+}
+
+.main-content.home {
+  padding-top: 0;
 }
 
 body.light {

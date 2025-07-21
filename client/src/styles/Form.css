@@ -93,7 +93,7 @@
   text-decoration: underline;
 }
 
-.no-account
+.no-account,
 .yes-account {
   font-size: 1rem;
   text-align: center;
