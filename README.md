@@ -19,6 +19,7 @@ Designed with a user-centric approach, featuring:
 
 ## 📂 Project Structure
 
+```
 client/
 public/
 src/
@@ -33,6 +34,7 @@ index.html
 server/ (future implementation)
 index.js
 package.json
+```
 
 ## 💻 Getting Started
 
