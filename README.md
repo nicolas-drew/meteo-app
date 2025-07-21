@@ -20,19 +20,19 @@ Designed with a user-centric approach, featuring:
 ## 📂 Project Structure
 
 client/
-├── public/
-├── src/
-│   ├── components/    # Reusable UI components (Navbar, Footer, etc.)
-│   ├── pages/         # Main pages (Home, Login, Signup)
-│   ├── assets/        # Images, icons, backgrounds
-│   ├── App.jsx
-│   ├── main.jsx
-|   ├── Index.css
-└── index.html
+public/
+src/
+components/ # Reusable UI components (Navbar, Footer, etc.)
+pages/ # Main pages (Home, Login, Signup)
+assets/ # Images, icons, backgrounds
+App.jsx
+main.jsx
+index.css
+index.html
 
 server/ (future implementation)
-├── index.js
-└── package.json
+index.js
+package.json
 
 ## 💻 Getting Started
 
