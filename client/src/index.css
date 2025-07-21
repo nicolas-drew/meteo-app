@@ -16,6 +16,8 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 body.light {
@@ -38,4 +40,8 @@ body.light .footer a {
 body.dark .navbar-connexion,
 body.dark .footer a {
   color: white;
+}
+
+body.dark .yes-account {
+  color: #202020;
 }

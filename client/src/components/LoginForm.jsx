@@ -1,5 +1,6 @@
 import { FcGoogle } from "react-icons/fc";
-import "./LoginForm.css"
+import "./Form.css";
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   return (
@@ -9,9 +10,19 @@ const LoginForm = () => {
         <FcGoogle /> Continuer avec Google
       </button>
       <input required type="email" placeholder="Email" name="email" />
-      <input required type="password" placeholder="********" />
-      <span className="forgot-password"><a href="#" className="">Mot de passe oublié ?</a></span>
-      <button>Se connecter</button>
+      <input required type="password" placeholder="Mot de passe" />
+      <span className="forgot-password">
+        <a href="#" className="">
+          Mot de passe oublié ?
+        </a>
+      </span>
+      <button className="login-btn">Se connecter</button>
+      <span className="no-account">
+        Pas encore de compte ?&nbsp;
+        <Link to="/signup" className="form-inscription">
+          s'inscrire
+        </Link>
+      </span>
     </form>
   );
 };
