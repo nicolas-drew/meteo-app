@@ -42,7 +42,7 @@ server/ (future implementation)
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/meteo-app.git
+git clone https://github.com/nicolas-drew/meteo-app.git
 
 # Navigate to project folder
 cd meteo-app/client
