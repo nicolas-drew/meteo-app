@@ -26,6 +26,7 @@ client/
 │ ├── components/ # Reusable UI components (Navbar, Footer, etc.)
 │ ├── pages/ # Main pages (Home, Login, Signup)
 │ ├── assets/ # Images, icons, backgrounds
+| ├── styles/ # CSS
 │ ├── App.jsx
 │ ├── main.jsx
 │ └── index.css
