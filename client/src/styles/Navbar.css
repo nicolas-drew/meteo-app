@@ -20,9 +20,8 @@
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(90deg, #e3f6fd 50%, #e7f2ff 100%);
-  backdrop-filter: blur(8px);
   box-shadow: 0 4px 24px rgba(130, 195, 255, 0.11);
-  border-radius: 16px;
+  border-radius: 25px;
   padding: 1px 45px;
   display: flex;
   gap: 6rem;
@@ -46,7 +45,7 @@
 
 .navbar-center a:active {
   color: #f7d1a0;
-} 
+}
 
 .navbar-logo {
   font-size: 1.5rem;
@@ -72,16 +71,21 @@
 }
 
 .navbar-inscription {
-  background: #1f1656;
-  border: none;
+  background: linear-gradient(45deg, #5439f1, #9278f2);
   color: white;
-  padding: 8px;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 25px;
   text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
 }
-
+.navbar-inscription:hover {
+  transform: scale(1.01);
+}
+.navbar-inscription:active {
+  transform: scale(0.99);
+}
 
 .toggle-switch {
   width: 60px;

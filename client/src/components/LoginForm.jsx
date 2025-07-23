@@ -7,7 +7,8 @@ const LoginForm = () => {
     <form className="login-form">
       <h2 className="title-form">Connexion</h2>
       <button className="login-google">
-        <FcGoogle className="logo-google"/>Continuer avec Google
+        <FcGoogle className="logo-google" />
+        Continuer avec Google
       </button>
       <input required type="email" placeholder="Email" name="email" />
       <input required type="password" placeholder="Mot de passe" />

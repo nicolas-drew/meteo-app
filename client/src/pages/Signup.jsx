@@ -1,9 +1,9 @@
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer"
+import Footer from "../components/Footer";
 import SignupForm from "../components/SignupForm";
 
 const Signup = () => {
-    return (
+  return (
     <div className="app-container">
       <Navbar />
       <main className="main-content">
@@ -12,6 +12,6 @@ const Signup = () => {
       <Footer />
     </div>
   );
-}
+};
 
 export default Signup;
