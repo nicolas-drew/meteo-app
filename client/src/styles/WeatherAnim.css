@@ -1,0 +1,33 @@
+.weather-page.clear {
+  background: linear-gradient(135deg, #56ccf2 0%, #2f80ed 100%);
+}
+
+.weather-page.clouds {
+  background: linear-gradient(135deg, #c7d3e6 0%, #90a6c4 100%);
+}
+
+.weather-page.rain {
+  background: linear-gradient(135deg, #5e7fa1 0%, #293949 100%);
+}
+
+.weather-page.snow {
+  background: linear-gradient(135deg, #eaf6fb 0%, #fafdff 100%);
+}
+
+.weather-page.thunderstorm {
+  background: linear-gradient(135deg, #3c3b5a 0%, #6a6b83 100%);
+}
+
+.weather-page.drizzle {
+  background: linear-gradient(135deg, #96c6ea 0%, #b2c6d6 100%);
+}
+
+.weather-page.mist,
+.weather-page.fog,
+.weather-page.haze {
+  background: linear-gradient(135deg, #bfc7d1 0%, #dbe7ee 100%);
+}
+
+.weather-page.default {
+  background: linear-gradient(135deg, #7fd4ff 0%, #b7e4ff 100%);
+}

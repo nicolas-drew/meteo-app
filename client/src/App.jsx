@@ -1,6 +1,6 @@
-import Home from "./pages/Home";
 import "./index.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
 import Weather from "./pages/Weather";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";

@@ -1,4 +1,5 @@
 import "../styles/WeatherCard.css";
+import "../styles/WeatherAnim.css";
 
 const WeatherCard = ({ weatherData }) => {
   const { current, forecast } = weatherData;

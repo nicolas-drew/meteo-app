@@ -10,6 +10,7 @@ const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [debugWeather, setDebugWeather] = useState("");
 
   useEffect(() => {
     fetchWeatherData(city);
@@ -72,9 +73,59 @@ const Weather = () => {
     );
   }
 
+  const weatherTypes = [
+    "clear",
+    "clouds",
+    "rain",
+    "snow",
+    "thunderstorm",
+    "drizzle",
+    "fog",
+    "default",
+  ];
+
+  let weatherMain = "default";
+  if (debugWeather) {
+    weatherMain = debugWeather;
+  } else if (
+    weatherData &&
+    weatherData.current &&
+    weatherData.current.weather
+  ) {
+    weatherMain = weatherData.current.weather[0].main.toLowerCase();
+  }
+
   return (
     <div className="app-container">
-      <main className="main-content weather-page">
+      <main className={`main-content weather-page ${weatherMain}`}>
+        {/* --- Boutons temporaires pour tester les backgrounds --- */}
+        <div style={{ position: "absolute", top: 15, right: 15 }}>
+          {weatherTypes.map((type) => (
+            <button
+              key={type}
+              onClick={() => setDebugWeather(type)}
+              style={{
+                margin: "0 4px",
+                padding: "5px",
+                borderRadius: "5px",
+                border: "none",
+              }}
+            >
+              {type}
+            </button>
+          ))}
+          <button
+            style={{
+              margin: "0 4px",
+              padding: "5px",
+              borderRadius: "5px",
+              border: "none",
+            }}
+            onClick={() => setDebugWeather("")}
+          >
+            auto
+          </button>
+        </div>
         <WeatherCard weatherData={weatherData} />
       </main>
     </div>
