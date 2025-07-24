@@ -35,7 +35,7 @@ body.light {
 body.dark {
   color: white;
   background: #1e3c72;
-  background: linear-gradient(to right, #1e3c72, #1e3c72, #2a5298);
+  background: linear-gradient(to right, #06142f, #0d224a, #14346c);
 }
 
 body.light .navbar-connexion,

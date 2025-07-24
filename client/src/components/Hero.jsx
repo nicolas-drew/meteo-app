@@ -19,7 +19,10 @@ const Hero = () => {
     <div className="hero">
       <h1>Consulte la météo</h1>
       <form className="search-bar" onSubmit={handleSearch}>
-        <FaLocationDot className="icon-location" />
+        <FaLocationDot
+          className="icon-location"
+          title="Utiliser ma position actuelle"
+        />
         <input
           type="text"
           placeholder="Saisis ta ville"

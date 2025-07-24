@@ -19,9 +19,7 @@ const Navbar = () => {
 
       <div className="navbar-center">
         <Link to="/">Accueil</Link>
-        <a href="#" className="navbar-link">
-          Page2
-        </a>
+        <Link to="/map">Carte</Link>
         <a href="#" className="navbar-link">
           Page3
         </a>
