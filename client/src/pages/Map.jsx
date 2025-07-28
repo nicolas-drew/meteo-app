@@ -1,5 +1,6 @@
 import WeatherMap from "../components/WeatherMap";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const Map = () => {
   return (
@@ -8,6 +9,7 @@ const Map = () => {
       <main className="main-content">
         <WeatherMap />
       </main>
+      <Footer />
     </div>
   );
 };
