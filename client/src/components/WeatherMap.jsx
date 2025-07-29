@@ -7,6 +7,8 @@ import {
   Popup,
   Marker,
 } from "react-leaflet";
+import { Link } from "react-router-dom";
+import { IoMdArrowRoundForward } from "react-icons/io";
 
 const MapClickHandler = ({ onMapClick }) => {
   useMapEvents({
@@ -57,34 +59,103 @@ const WeatherMap = () => {
   };
 
   return (
-    <MapContainer
-      center={userPosition}
-      zoom={4}
-      scrollWheelZoom={true}
-      className="weather-map"
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div className="weather-map-container">
       {selectedPosition && (
-        <Marker position={selectedPosition}>
-          <Popup>
-            {weatherData ? (
-              <div>
-                <strong>{weatherData.name}</strong>
-                <br />
-                {Math.round(weatherData.main.temp)}°C -{" "}
-                {weatherData.weather[0].description}
+        <div className="weather-sidebar">
+          {loading ? (
+            <div className="loading">Chargement...</div>
+          ) : weatherData ? (
+            <div className="weather-info">
+              <h2>{weatherData.name}</h2>
+              <div className="temp">{Math.round(weatherData.main.temp)}°C</div>
+              <div className="description">
+                {weatherData.weather?.[0]?.description}
               </div>
-            ) : (
-              "Chargement..."
-            )}
-          </Popup>
-        </Marker>
+              <img
+                src={`https://openweathermap.org/img/wn/${weatherData.weather?.[0]?.icon}@2x.png`}
+                alt={weatherData.weather?.[0]?.description || ""}
+              />
+              <div className="details">
+                <p>Ressenti: {Math.round(weatherData.main.feels_like)}°C</p>
+                <p>Humidité: {weatherData.main.humidity}%</p>
+                <p>
+                  Vent: {Math.round((weatherData.wind?.speed || 0) * 3.6)} km/h
+                </p>
+              </div>
+              <Link
+                to={`/weather/${encodeURIComponent(weatherData.name)}`}
+                style={{ textDecoration: "none" }}
+              >
+                <button class="animated-button">
+                  <IoMdArrowRoundForward className="arr-1" />
+                  <span class="text">Page</span>
+                  <IoMdArrowRoundForward className="arr-2" />
+                </button>
+              </Link>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
       )}
-      <MapClickHandler onMapClick={handleMapClick} />
-    </MapContainer>
+
+      <div className="layer-switcher">
+        <button
+          className={weatherLayer === "temp" ? "active" : ""}
+          onClick={() => setWeatherLayer("temp")}
+        >
+          Température
+        </button>
+        <button
+          className={weatherLayer === "precipitation" ? "active" : ""}
+          onClick={() => setWeatherLayer("precipitation")}
+        >
+          Précipitations
+        </button>
+        <button
+          className={weatherLayer === "clouds" ? "active" : ""}
+          onClick={() => setWeatherLayer("clouds")}
+        >
+          Nuages
+        </button>
+        <button
+          className={weatherLayer === "wind" ? "active" : ""}
+          onClick={() => setWeatherLayer("wind")}
+        >
+          Vent
+        </button>
+      </div>
+
+      <MapContainer
+        center={userPosition}
+        zoom={4}
+        scrollWheelZoom={true}
+        className="weather-map"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <TileLayer url={getWeatherLayerUrl(weatherLayer)} opacity={0.6} />
+        {selectedPosition && (
+          <Marker position={selectedPosition}>
+            <Popup>
+              {weatherData ? (
+                <div>
+                  <strong>{weatherData.name}</strong>
+                  <br />
+                  {Math.round(weatherData.main.temp)}°C -{" "}
+                  {weatherData.weather?.[0]?.description}
+                </div>
+              ) : (
+                "Chargement..."
+              )}
+            </Popup>
+          </Marker>
+        )}
+        <MapClickHandler onMapClick={handleMapClick} />
+      </MapContainer>
+    </div>
   );
 };
 

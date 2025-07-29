@@ -28,6 +28,7 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   max-width: 400px;
   width: 100%;
+  color: #202020;
 }
 
 .search-bar input {
@@ -39,12 +40,12 @@
 }
 
 .search-bar button {
+  display: flex;
   border: none;
   background: none;
   cursor: pointer;
   font-size: 1.1rem;
 }
-
-.icon-location {
+.search-bar button:active {
   color: #202020;
 }
