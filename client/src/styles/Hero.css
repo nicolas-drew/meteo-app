@@ -20,6 +20,7 @@
 }
 
 .search-bar {
+  position: relative;
   display: flex;
   align-items: center;
   background: white;
@@ -45,7 +46,37 @@
   background: none;
   cursor: pointer;
   font-size: 1.1rem;
+  color: #202020;
 }
 .search-bar button:active {
   color: #202020;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: 80%;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 8px 18px rgba(20, 20, 20, 0.2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+.suggestions-list li {
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #23214c;
+  font-size: 1rem;
+  border-bottom: 1px solid #eaf4ff;
+}
+.suggestions-list li:last-child {
+  border-bottom: none;
+}
+.suggestions-list li:hover {
+  background: #f2f8fd;
 }

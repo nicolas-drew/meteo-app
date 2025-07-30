@@ -86,9 +86,9 @@ const WeatherMap = () => {
                 to={`/weather/${encodeURIComponent(weatherData.name)}`}
                 style={{ textDecoration: "none" }}
               >
-                <button class="animated-button">
+                <button className="animated-button">
                   <IoMdArrowRoundForward className="arr-1" />
-                  <span class="text">Page</span>
+                  <span className="text">Live</span>
                   <IoMdArrowRoundForward className="arr-2" />
                 </button>
               </Link>

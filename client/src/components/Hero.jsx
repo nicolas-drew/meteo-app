@@ -4,10 +4,14 @@ import { FaSearch } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
+
 const Hero = () => {
   const [city, setCity] = useState("");
   const [loadinglocation, setLoadingLocation] = useState(false);
   const navigate = useNavigate();
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     handleLocationClick();
@@ -50,11 +54,44 @@ const Hero = () => {
     }
   };
 
+  const handleInputChange = async (e) => {
+    const value = e.target.value;
+    setCity(value);
+
+    if (value.length > 2) {
+      const res = await fetch(
+        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
+          value
+        )}&limit=5&appid=${API_KEY}`
+      );
+
+      const data = await res.json();
+      setSuggestions(
+        data.map(
+          (cityObj) =>
+            `${cityObj.name}${cityObj.state ? ", " + cityObj.state : ""}, ${
+              cityObj.country
+            }`
+        )
+      );
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (city.trim()) {
       navigate(`/weather/${encodeURIComponent(city.trim())}`);
     }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setCity(suggestion);
+    setShowSuggestions(false);
+    // navigate(`/weather/${encodeURIComponent(suggestion)}`);
   };
 
   return (
@@ -74,8 +111,23 @@ const Hero = () => {
           type="text"
           placeholder="Saisis ta ville"
           value={city}
-          onChange={(e) => setCity(e.target.value)}
+          onChange={handleInputChange}
+          onFocus={() =>
+            city.length > 2 &&
+            suggestions.length > 0 &&
+            setShowSuggestions(true)
+          }
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 120)}
         />
+        {showSuggestions && suggestions.length > 0 && (
+          <ul className="suggestions-list">
+            {suggestions.map((suggest, idx) => (
+              <li key={idx} onMouseDown={() => handleSuggestionClick(suggest)}>
+                {suggest}
+              </li>
+            ))}
+          </ul>
+        )}
         <button type="submit">
           <FaSearch />
         </button>
