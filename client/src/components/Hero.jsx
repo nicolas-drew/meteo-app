@@ -45,12 +45,12 @@ const Hero = () => {
         },
         (error) => {
           alert("Impossible d'obtenir la position : " + error.message);
-          setLoadingLoc(false);
+          setLoadingLocation(false);
         }
       );
     } else {
       alert("La géolocalisation n'est pas supportée par ce navigateur.");
-      setLoadingLoc(false);
+      setLoadingLocation(false);
     }
   };
 
