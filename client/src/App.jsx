@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import Home from "./pages/Home";
 import Weather from "./pages/Weather";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Register from "./pages/Register";
 import Map from "./pages/Map";
 import Profile from "./pages/Profile";
 
@@ -14,7 +14,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/weather/:city" element={<Weather />} />
         <Route path="/map" element={<Map />} />
         <Route path="/profile" element={<Profile />} />

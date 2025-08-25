@@ -23,7 +23,6 @@ const Profile = () => {
     preferences: {
       theme: "auto",
       units: "metric",
-      notifications: true,
     },
   });
 
@@ -315,17 +314,6 @@ const Profile = () => {
                     <option value="metric">Celsius (°C)</option>
                     <option value="imperial">Fahrenheit (°F)</option>
                   </select>
-                </div>
-
-                <div className="setting-item">
-                  <label>Notifications météo</label>
-                  <input
-                    type="checkbox"
-                    checked={userProfile.preferences.notifications}
-                    onChange={(e) =>
-                      updatePreference("notifications", e.target.checked)
-                    }
-                  />
                 </div>
               </div>
 

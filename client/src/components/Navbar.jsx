@@ -25,9 +25,6 @@ const Navbar = () => {
       <div className="navbar-center">
         <Link to="/">Accueil</Link>
         <Link to="/map">Carte</Link>
-        <a href="#" className="navbar-link">
-          Page3
-        </a>
       </div>
 
       <div className="navbar-actions">
@@ -45,7 +42,7 @@ const Navbar = () => {
             <Link to="/login" className="navbar-connexion">
               Connexion
             </Link>
-            <Link to="/signup" className="navbar-inscription">
+            <Link to="/register" className="navbar-inscription">
               Inscription
             </Link>
           </>
