@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
 const { body } = require("express-validator");
+const { register, login } = require("../controllers/authController");
 
 const registerValidation = [
   body("email").isEmail().normalizeEmail().withMessage("Email invalide"),
