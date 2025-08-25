@@ -7,7 +7,6 @@
 .navbar {
   padding: 1rem 2rem;
   color: white;
-  font-family: "Segoe UI", sans-serif;
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -58,7 +57,8 @@
   gap: 1rem;
 }
 
-.navbar-connexion {
+.navbar-connexion,
+.navbar-deconnexion {
   background: none;
   border: none;
   border-radius: 5px;
@@ -70,7 +70,12 @@
   text-decoration: none;
 }
 
-.navbar-inscription {
+.navbar-deconnexion:hover {
+  color: #fd4646;
+}
+
+.navbar-inscription,
+.navbar-profile {
   background: linear-gradient(45deg, #5439f1, #9278f2);
   color: white;
   padding: 10px 20px;

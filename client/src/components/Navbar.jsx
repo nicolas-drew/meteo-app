@@ -4,9 +4,14 @@ import { useState, useEffect } from "react";
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // <-- simulation
 
   const toggleTheme = () => {
     setDarkMode((prev) => !prev);
+  };
+
+  const toggleLogin = () => {
+    setIsLoggedIn((prev) => !prev);
   };
 
   useEffect(() => {
@@ -26,12 +31,25 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-actions">
-        <Link to="/login" className="navbar-connexion">
-          Connexion
-        </Link>
-        <Link to="/signup" className="navbar-inscription">
-          Inscription
-        </Link>
+        {isLoggedIn ? (
+          <>
+            <button className="navbar-deconnexion" onClick={toggleLogin}>
+              Déconnexion
+            </button>
+            <Link to="/profile" className="navbar-profile">
+              Profile
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="navbar-connexion">
+              Connexion
+            </Link>
+            <Link to="/signup" className="navbar-inscription">
+              Inscription
+            </Link>
+          </>
+        )}
 
         <div className="toggle-switch" onClick={toggleTheme}>
           <div className={`toggle-thumb ${darkMode ? "right" : ""}`}>

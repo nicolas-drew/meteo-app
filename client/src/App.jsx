@@ -6,6 +6,7 @@ import Weather from "./pages/Weather";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Map from "./pages/Map";
+import Profile from "./pages/Profile";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/weather/:city" element={<Weather />} />
         <Route path="/map" element={<Map />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );
