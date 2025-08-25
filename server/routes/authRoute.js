@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
-const { register, login } = require("../controllers/authController");
+const {
+  register,
+  login,
+  getProfile,
+} = require("../controllers/authController");
+const { authenticateToken } = require("../middlewares/authMiddleware");
 
 const registerValidation = [
   body("email").isEmail().normalizeEmail().withMessage("Email invalide"),
@@ -15,7 +20,11 @@ const loginValidation = [
   body("password").notEmpty().withMessage("Mot de passe requis"),
 ];
 
+// Routes publiques
 router.post("/register", registerValidation, register);
 router.post("/login", loginValidation, login);
+
+// Route protégée
+router.get("/profile", authenticateToken, getProfile);
 
 module.exports = router;
