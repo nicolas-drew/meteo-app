@@ -35,6 +35,9 @@ app.post("/api/test-user", async (req, res) => {
   }
 });
 
+app.use("/api/auth", require("./routes/authRoute"));
+app.use("/api/user", require("./routes/userRoute"));
+
 app.get("/api/hello", (req, res) => {
   res.json({ message: "Hello depuis le serveur !" });
 });
