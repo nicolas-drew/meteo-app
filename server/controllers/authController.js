@@ -24,8 +24,7 @@ const register = async (req, res) => {
       });
     }
 
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const newUser = new User({
       email,
@@ -77,6 +76,7 @@ const login = async (req, res) => {
       });
     }
 
+    // Vérification du mot de passe + génération du token
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({

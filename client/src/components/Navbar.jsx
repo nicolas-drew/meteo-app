@@ -1,23 +1,15 @@
 import { Link } from "react-router-dom";
 import "../styles/Navbar.css";
-import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 const Navbar = () => {
-  const [darkMode, setDarkMode] = useState(false);
   const { user, logout, isAuthenticated } = useAuth();
-
-  const toggleTheme = () => {
-    setDarkMode((prev) => !prev);
-  };
+  const { darkMode, toggleTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
   };
-
-  useEffect(() => {
-    document.body.className = darkMode ? "dark" : "light";
-  }, [darkMode]);
 
   return (
     <nav className="navbar">

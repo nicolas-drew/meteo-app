@@ -36,11 +36,6 @@ const Hero = () => {
             "";
 
           setCity(userCity);
-
-          const localHour = new Date().getHours();
-          if (localHour >= 20 || localHour < 7) {
-            document.body.className = "dark";
-          } else document.body.className = "light";
           setLoadingLocation(false);
         },
         (error) => {
