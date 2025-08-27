@@ -50,7 +50,6 @@ const SignupForm = () => {
         email: formData.email,
         password: formData.password,
       });
-      console.log("Inscription réussie !");
       navigate("/"); // Rediriger vers l'accueil
     } catch (err) {
       console.error("Erreur d'inscription:", err.message);
