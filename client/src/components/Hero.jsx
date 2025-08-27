@@ -12,16 +12,37 @@ const Hero = () => {
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [hasAskedLocation, setHasAskedLocation] = useState(false);
 
+  // Demander la localisation seulement la première fois
   useEffect(() => {
-    handleLocationClick();
+    const hasAskedLocationBefore = localStorage.getItem("hasAskedLocation");
+    const savedCity = localStorage.getItem("userCity");
+
+    if (!hasAskedLocationBefore) {
+      // Première visite : demander la localisation
+      handleLocationClick();
+      localStorage.setItem("hasAskedLocation", "true");
+    } else if (savedCity) {
+      // Visites suivantes : utiliser la ville sauvegardée
+      setCity(savedCity);
+    }
   }, []);
 
   const handleLocationClick = async () => {
+    if (loadinglocation) return; // Éviter les doubles clics
+
     setLoadingLocation(true);
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
+
+    if (!navigator.geolocation) {
+      alert("La géolocalisation n'est pas supportée par ce navigateur.");
+      setLoadingLocation(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
           const { latitude, longitude } = position.coords;
 
           const res = await fetch(
@@ -36,17 +57,40 @@ const Hero = () => {
             "";
 
           setCity(userCity);
-          setLoadingLocation(false);
-        },
-        (error) => {
-          alert("Impossible d'obtenir la position : " + error.message);
+          // Sauvegarder la ville dans localStorage
+          if (userCity) {
+            localStorage.setItem("userCity", userCity);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération de la ville:", error);
+          alert("Erreur lors de la récupération de votre localisation");
+        } finally {
           setLoadingLocation(false);
         }
-      );
-    } else {
-      alert("La géolocalisation n'est pas supportée par ce navigateur.");
-      setLoadingLocation(false);
-    }
+      },
+      (error) => {
+        console.error("Erreur géolocalisation:", error);
+        let errorMessage = "Impossible d'obtenir la position";
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "L'accès à la localisation a été refusé";
+            // Marquer que l'utilisateur a refusé pour ne pas redemander
+            localStorage.setItem("locationDenied", "true");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage =
+              "Les informations de localisation ne sont pas disponibles";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "La demande de localisation a expiré";
+            break;
+        }
+
+        alert(errorMessage);
+        setLoadingLocation(false);
+      }
+    );
   };
 
   const handleInputChange = async (e) => {
@@ -54,22 +98,28 @@ const Hero = () => {
     setCity(value);
 
     if (value.length > 2) {
-      const res = await fetch(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
-          value
-        )}&limit=5&appid=${API_KEY}`
-      );
+      try {
+        const res = await fetch(
+          `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
+            value
+          )}&limit=5&appid=${API_KEY}`
+        );
 
-      const data = await res.json();
-      setSuggestions(
-        data.map(
-          (cityObj) =>
-            `${cityObj.name}${cityObj.state ? ", " + cityObj.state : ""}, ${
-              cityObj.country
-            }`
-        )
-      );
-      setShowSuggestions(true);
+        const data = await res.json();
+        setSuggestions(
+          data.map(
+            (cityObj) =>
+              `${cityObj.name}${cityObj.state ? ", " + cityObj.state : ""}, ${
+                cityObj.country
+              }`
+          )
+        );
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des suggestions:", error);
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -79,6 +129,8 @@ const Hero = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (city.trim()) {
+      // Sauvegarder la ville recherchée
+      localStorage.setItem("userCity", city.trim());
       navigate(`/weather/${encodeURIComponent(city.trim())}`);
     }
   };
@@ -86,6 +138,7 @@ const Hero = () => {
   const handleSuggestionClick = (suggestion) => {
     setCity(suggestion);
     setShowSuggestions(false);
+    // Optionnel : naviguer directement vers la météo de cette ville
     // navigate(`/weather/${encodeURIComponent(suggestion)}`);
   };
 
