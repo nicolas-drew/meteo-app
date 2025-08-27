@@ -30,7 +30,7 @@ const Hero = () => {
   }, []);
 
   const handleLocationClick = async () => {
-    if (loadinglocation) return; // Éviter les doubles clics
+    if (loadinglocation) return;
 
     setLoadingLocation(true);
 
@@ -138,8 +138,6 @@ const Hero = () => {
   const handleSuggestionClick = (suggestion) => {
     setCity(suggestion);
     setShowSuggestions(false);
-    // Optionnel : naviguer directement vers la météo de cette ville
-    // navigate(`/weather/${encodeURIComponent(suggestion)}`);
   };
 
   return (
