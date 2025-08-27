@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Profile.css";
-import { FaHeart, FaTrash, FaEye, FaUser, FaCog, FaPlus } from "react-icons/fa";
+import { FaHeart, FaTrash, FaEye, FaUser, FaCog } from "react-icons/fa";
+import { useAuth } from "../contexts/AuthContext";
+import { userAPI } from "../services/api";
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, updateUser } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [favoriteWeathers, setFavoriteWeathers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -17,18 +20,19 @@ const Profile = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeTab, setActiveTab] = useState("favorites");
 
-  // Données utilisateur simulées (à remplacer par l'API)
-  const [userProfile, setUserProfile] = useState({
-    email: "user@example.com",
-    preferences: {
-      theme: "auto",
-      units: "metric",
-    },
-  });
+  // Rediriger si pas connecté
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
-    loadFavorites();
-  }, []);
+    if (isAuthenticated) {
+      loadFavorites();
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (favorites.length > 0) {
@@ -36,12 +40,15 @@ const Profile = () => {
     }
   }, [favorites]);
 
-  const loadFavorites = () => {
-    const savedFavorites = localStorage.getItem("favoriteCities");
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+  const loadFavorites = async () => {
+    try {
+      const data = await userAPI.getFavoriteCities();
+      setFavorites(data.favoriteCities || []);
+    } catch (error) {
+      console.error("Erreur chargement favoris:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const fetchFavoritesWeather = async () => {
@@ -49,17 +56,17 @@ const Profile = () => {
       try {
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-            city
+            city.cityName
           )}&appid=${API_KEY}&units=metric&lang=fr`
         );
         if (response.ok) {
           const data = await response.json();
-          return { city, data };
+          return { city: city.cityName, data };
         }
       } catch (error) {
-        console.error(`Erreur météo pour ${city}:`, error);
+        console.error(`Erreur météo pour ${city.cityName}:`, error);
       }
-      return { city, data: null };
+      return { city: city.cityName, data: null };
     });
 
     const results = await Promise.all(weatherPromises);
@@ -70,25 +77,51 @@ const Profile = () => {
     setFavoriteWeathers(weatherData);
   };
 
-  const removeFavorite = (cityName) => {
-    const newFavorites = favorites.filter((fav) => fav !== cityName);
-    setFavorites(newFavorites);
-    localStorage.setItem("favoriteCities", JSON.stringify(newFavorites));
+  const removeFavorite = async (cityId) => {
+    try {
+      const data = await userAPI.removeFavoriteCity(cityId);
+      setFavorites(data.favoriteCities);
 
-    // Supprimer aussi les données météo
-    const newWeatherData = { ...favoriteWeathers };
-    delete newWeatherData[cityName];
-    setFavoriteWeathers(newWeatherData);
+      // Supprimer aussi les données météo
+      const cityToRemove = favorites.find((fav) => fav._id === cityId);
+      if (cityToRemove) {
+        const newWeatherData = { ...favoriteWeathers };
+        delete newWeatherData[cityToRemove.cityName];
+        setFavoriteWeathers(newWeatherData);
+      }
+    } catch (error) {
+      console.error("Erreur suppression favori:", error);
+      alert("Erreur lors de la suppression");
+    }
   };
 
-  const addFavorite = (cityName) => {
-    if (!favorites.includes(cityName)) {
-      const newFavorites = [...favorites, cityName];
-      setFavorites(newFavorites);
-      localStorage.setItem("favoriteCities", JSON.stringify(newFavorites));
+  const addFavorite = async (cityName) => {
+    try {
+      // Obtenir les coordonnées de la ville
+      const geoResponse = await fetch(
+        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
+          cityName
+        )}&limit=1&appid=${API_KEY}`
+      );
+      const geoData = await geoResponse.json();
+
+      const coordinates =
+        geoData.length > 0
+          ? { lat: geoData[0].lat, lon: geoData[0].lon }
+          : { lat: 0, lon: 0 };
+
+      const data = await userAPI.addFavoriteCity({
+        cityName,
+        coordinates,
+      });
+
+      setFavorites(data.favoriteCities);
+      setNewCity("");
+      setShowSuggestions(false);
+    } catch (error) {
+      console.error("Erreur ajout favori:", error);
+      alert(error.message || "Erreur lors de l'ajout");
     }
-    setNewCity("");
-    setShowSuggestions(false);
   };
 
   const handleInputChange = async (e) => {
@@ -125,17 +158,27 @@ const Profile = () => {
     return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
   };
 
-  const updatePreference = (key, value) => {
-    setUserProfile((prev) => ({
-      ...prev,
-      preferences: {
-        ...prev.preferences,
-        [key]: value,
-      },
-    }));
-    // Ici tu pourras faire l'appel API pour sauvegarder
-    console.log("Préférence mise à jour:", key, value);
+  const updatePreference = async (key, value) => {
+    try {
+      const preferences = { [key]: value };
+      await userAPI.updatePreferences(preferences);
+
+      // Mettre à jour le user dans le context
+      updateUser({
+        preferences: {
+          ...user.preferences,
+          [key]: value,
+        },
+      });
+    } catch (error) {
+      console.error("Erreur mise à jour préférence:", error);
+      alert("Erreur lors de la mise à jour");
+    }
   };
+
+  if (!isAuthenticated) {
+    return null; // ou un loader
+  }
 
   if (loading) {
     return (
@@ -159,7 +202,7 @@ const Profile = () => {
               <FaUser />
             </div>
             <h1>Mon Profil</h1>
-            <p>{userProfile.email}</p>
+            <p>{user?.email}</p>
           </div>
 
           <div className="profile-tabs">
@@ -225,14 +268,14 @@ const Profile = () => {
                   </div>
                 ) : (
                   favorites.map((city, idx) => {
-                    const weatherData = favoriteWeathers[city];
+                    const weatherData = favoriteWeathers[city.cityName];
                     return (
-                      <div key={idx} className="favorite-card">
+                      <div key={city._id || idx} className="favorite-card">
                         <div className="card-header">
-                          <h3>{city}</h3>
+                          <h3>{city.cityName}</h3>
                           <button
                             className="remove-btn"
-                            onClick={() => removeFavorite(city)}
+                            onClick={() => removeFavorite(city._id)}
                             title="Supprimer des favoris"
                           >
                             <FaTrash />
@@ -275,7 +318,9 @@ const Profile = () => {
                         <button
                           className="view-detail-btn"
                           onClick={() =>
-                            navigate(`/weather/${encodeURIComponent(city)}`)
+                            navigate(
+                              `/weather/${encodeURIComponent(city.cityName)}`
+                            )
                           }
                         >
                           <FaEye /> Voir détail
@@ -296,7 +341,7 @@ const Profile = () => {
                 <div className="setting-item">
                   <label>Thème</label>
                   <select
-                    value={userProfile.preferences.theme}
+                    value={user?.preferences?.theme || "auto"}
                     onChange={(e) => updatePreference("theme", e.target.value)}
                   >
                     <option value="auto">Automatique</option>
@@ -308,7 +353,7 @@ const Profile = () => {
                 <div className="setting-item">
                   <label>Unités de température</label>
                   <select
-                    value={userProfile.preferences.units}
+                    value={user?.preferences?.units || "metric"}
                     onChange={(e) => updatePreference("units", e.target.value)}
                   >
                     <option value="metric">Celsius (°C)</option>
@@ -324,7 +369,7 @@ const Profile = () => {
                   <label>Email</label>
                   <input
                     type="email"
-                    value={userProfile.email}
+                    value={user?.email || ""}
                     readOnly
                     className="readonly-input"
                   />

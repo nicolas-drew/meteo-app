@@ -5,8 +5,6 @@ const { generateToken } = require("../middlewares/authMiddleware");
 
 const register = async (req, res) => {
   try {
-    console.log("Inscription - Données reçues:", req.body.email);
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -22,7 +20,7 @@ const register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "Un compte avec cet email existe déjà",
+        message: "Erreur lors de la création du compte",
       });
     }
 
@@ -37,7 +35,6 @@ const register = async (req, res) => {
     const savedUser = await newUser.save();
 
     const token = generateToken(savedUser._id);
-    console.log("Token généré pour:", savedUser.email);
 
     res.status(201).json({
       success: true,
@@ -52,7 +49,6 @@ const register = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error("Erreur inscription:", error);
     res.status(500).json({
       success: false,
       message: "Erreur serveur lors de l'inscription",
@@ -62,8 +58,6 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    console.log("Connexion - Email:", req.body.email);
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -92,7 +86,6 @@ const login = async (req, res) => {
     }
 
     const token = generateToken(user._id);
-    console.log("Connexion réussie + token généré pour:", user.email);
 
     res.json({
       success: true,
@@ -116,8 +109,6 @@ const login = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    console.log("Profil demandé pour:", req.user.email);
-
     res.json({
       success: true,
       user: {

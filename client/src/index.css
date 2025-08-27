@@ -31,18 +31,28 @@ body.light {
   background: linear-gradient(to right, #2980b9, #6dd5fa, #ffffff);
 }
 
+body.light .navbar-deconnexion:hover {
+  color: #fd4646;
+}
+
 body.dark {
   color: white;
   background: #1e3c72;
   background: linear-gradient(to right, #06142f, #0d224a, #14346c);
 }
 
+body.dark .navbar-deconnexion:hover {
+  color: #fd4646;
+}
+
 body.light .navbar-connexion,
+body.light .navbar-deconnexion,
 body.light .footer a {
   color: #202020;
 }
 
 body.dark .navbar-connexion,
+body.dark .navbar-deconnexion,
 body.dark .footer a {
   color: white;
 }

@@ -1,17 +1,18 @@
 import { Link } from "react-router-dom";
 import "../styles/Navbar.css";
 import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // <-- simulation
+  const { user, logout, isAuthenticated } = useAuth();
 
   const toggleTheme = () => {
     setDarkMode((prev) => !prev);
   };
 
-  const toggleLogin = () => {
-    setIsLoggedIn((prev) => !prev);
+  const handleLogout = () => {
+    logout();
   };
 
   useEffect(() => {
@@ -28,9 +29,9 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-actions">
-        {isLoggedIn ? (
+        {isAuthenticated ? (
           <>
-            <button className="navbar-deconnexion" onClick={toggleLogin}>
+            <button className="navbar-deconnexion" onClick={handleLogout}>
               Déconnexion
             </button>
             <Link to="/profile" className="navbar-profile">
