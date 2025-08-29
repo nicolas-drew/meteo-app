@@ -11,8 +11,11 @@ const Hero = () => {
   const [loadinglocation, setLoadingLocation] = useState(false);
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
+  const [selectedCity, setSelectedCity] = useState(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [hasAskedLocation, setHasAskedLocation] = useState(false);
+  const [weatherData, setWeatherData] = useState(null);
+  const [highlightIndex, setHighlightIndex] = useState(-1);
 
   // Demander la localisation seulement la première fois
   useEffect(() => {
@@ -26,8 +29,111 @@ const Hero = () => {
     } else if (savedCity) {
       // Visites suivantes : utiliser la ville sauvegardée
       setCity(savedCity);
+      fetchWeatherData(savedCity);
     }
   }, []);
+
+  // Fonction pour récupérer les données météo
+  const fetchWeatherData = async (cityArg) => {
+    try {
+      let currentResponse, forecastResponse;
+
+      if (typeof cityArg === "object" && cityArg?.lat && cityArg?.lon) {
+        const { lat, lon } = cityArg;
+        currentResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=fr`
+        );
+        forecastResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=fr`
+        );
+      } else {
+        const cityName = cityArg;
+        if (!cityName || cityName.length < 2) {
+          setWeatherData(null);
+          return;
+        }
+        currentResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+            cityName
+          )}&appid=${API_KEY}&units=metric&lang=fr`
+        );
+        forecastResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
+            cityName
+          )}&appid=${API_KEY}&units=metric&lang=fr`
+        );
+      }
+
+      if (currentResponse.ok && forecastResponse.ok) {
+        const currentData = await currentResponse.json();
+        const forecastData = await forecastResponse.json();
+
+        const dailyForecasts = groupForecastsByDay(forecastData.list);
+
+        setWeatherData({
+          current: currentData,
+          forecast: dailyForecasts.slice(0, 5),
+        });
+
+        const country = currentData.sys?.country;
+        const label = country
+          ? `${currentData.name}, ${country}`
+          : currentData.name;
+        setCity(label);
+        localStorage.setItem("userCity", label);
+      } else {
+        setWeatherData(null);
+      }
+    } catch (e) {
+      console.error("Erreur météo:", e);
+      setWeatherData(null);
+    }
+  };
+
+  // Fonction pour grouper les prévisions par jour
+  const groupForecastsByDay = (forecastList) => {
+    const grouped = {};
+
+    forecastList.forEach((item) => {
+      const date = new Date(item.dt * 1000);
+      const dayKey = date.toDateString();
+
+      if (!grouped[dayKey]) {
+        grouped[dayKey] = {
+          date: date,
+          items: [],
+          temp_min: item.main.temp_min,
+          temp_max: item.main.temp_max,
+          weather: item.weather[0],
+        };
+      }
+
+      grouped[dayKey].items.push(item);
+      grouped[dayKey].temp_min = Math.min(
+        grouped[dayKey].temp_min,
+        item.main.temp_min
+      );
+      grouped[dayKey].temp_max = Math.max(
+        grouped[dayKey].temp_max,
+        item.main.temp_max
+      );
+    });
+
+    return Object.values(grouped);
+  };
+
+  // Déclencher la recherche météo quand la ville change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (city.length >= 2) {
+        fetchWeatherData(city);
+      } else {
+        setWeatherData(null);
+      }
+    }, 500); // Délai pour éviter trop de requêtes
+
+    return () => clearTimeout(timer);
+  }, [city]);
 
   const handleLocationClick = async () => {
     if (loadinglocation) return;
@@ -107,13 +213,15 @@ const Hero = () => {
 
         const data = await res.json();
         setSuggestions(
-          data.map(
-            (cityObj) =>
-              `${cityObj.name}${cityObj.state ? ", " + cityObj.state : ""}, ${
-                cityObj.country
-              }`
-          )
+          data.map((c) => ({
+            name: c.name,
+            state: c.state || "",
+            country: c.country,
+            lat: c.lat,
+            lon: c.lon,
+          }))
         );
+
         setShowSuggestions(true);
       } catch (error) {
         console.error("Erreur lors de la récupération des suggestions:", error);
@@ -136,14 +244,61 @@ const Hero = () => {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    setCity(suggestion);
+    const label = `${suggestion.name}${
+      suggestion.state ? ", " + suggestion.state : ""
+    }, ${suggestion.country}`;
+    setCity(label);
+    setSelectedCity(suggestion);
     setShowSuggestions(false);
+
+    localStorage.setItem("selectedCity", JSON.stringify(suggestion));
+    localStorage.setItem("userCity", label);
+
+    fetchWeatherData({ lat: suggestion.lat, lon: suggestion.lon, label });
+  };
+
+  const formatDate = (date, isToday = false) => {
+    if (isToday) return "Aujourd'hui";
+
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    if (date.toDateString() === tomorrow.toDateString()) {
+      return "Demain";
+    }
+
+    return date.toLocaleDateString("fr-FR", {
+      weekday: "short",
+      day: "numeric",
+    });
+  };
+
+  const getWeatherIcon = (iconCode) => {
+    return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+  };
+
+  const handleTodayClick = () => {
+    if (weatherData?.current) {
+      const { name, sys, coord } = weatherData.current;
+      const label = sys?.country ? `${name}, ${sys.country}` : name;
+      navigate(
+        `/weather/${encodeURIComponent(label)}?lat=${coord.lat}&lon=${
+          coord.lon
+        }`
+      );
+    }
   };
 
   return (
     <div className="hero">
       <h1>Consulte la météo</h1>
-      <form className="search-bar" onSubmit={handleSearch}>
+      <form
+        className="search-bar"
+        onSubmit={(e) => {
+          e.preventDefault(); // 🔒 bloque le submit
+        }}
+      >
         <button
           type="button"
           className="location-button"
@@ -153,6 +308,7 @@ const Hero = () => {
         >
           <FaLocationDot className="icon-location" />
         </button>
+
         <input
           type="text"
           placeholder="Saisis ta ville"
@@ -164,20 +320,80 @@ const Hero = () => {
             setShowSuggestions(true)
           }
           onBlur={() => setTimeout(() => setShowSuggestions(false), 120)}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              setHighlightIndex((prev) =>
+                prev < suggestions.length - 1 ? prev + 1 : 0
+              );
+            } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              setHighlightIndex((prev) =>
+                prev > 0 ? prev - 1 : suggestions.length - 1
+              );
+            } else if (e.key === "Enter") {
+              e.preventDefault(); // évite submit
+              if (highlightIndex >= 0 && suggestions[highlightIndex]) {
+                handleSuggestionClick(suggestions[highlightIndex]);
+              }
+            }
+          }}
         />
+
         {showSuggestions && suggestions.length > 0 && (
           <ul className="suggestions-list">
             {suggestions.map((suggest, idx) => (
-              <li key={idx} onMouseDown={() => handleSuggestionClick(suggest)}>
-                {suggest}
+              <li
+                key={idx}
+                className={highlightIndex === idx ? "highlighted" : ""}
+                onMouseDown={() => handleSuggestionClick(suggest)}
+              >
+                {suggest.name}
+                {suggest.state ? `, ${suggest.state}` : ""}, {suggest.country}
               </li>
             ))}
           </ul>
         )}
-        <button type="submit">
-          <FaSearch />
-        </button>
       </form>
+
+      {/* Affichage des prévisions météo */}
+
+      {weatherData && (
+        <div className="weather-preview">
+          <h2 className="city-title">
+            {weatherData.current.name}
+            {weatherData.current.sys?.country
+              ? `, ${weatherData.current.sys.country}`
+              : ""}
+            {selectedCity?.state ? ` (${selectedCity.state})` : ""}
+          </h2>
+
+          <div className="forecast-container">
+            {weatherData.forecast.map((day, index) => (
+              <div
+                key={index}
+                className={`forecast-day ${index === 0 ? "today" : ""}`}
+                onClick={index === 0 ? handleTodayClick : undefined}
+              >
+                <div className="day-name">
+                  {formatDate(day.date, index === 0)}
+                </div>
+                <img
+                  src={getWeatherIcon(day.weather.icon)}
+                  alt={day.weather.description}
+                  className="weather-icon"
+                />
+                <div className="temperature-range">
+                  <span className="temp-max">{Math.round(day.temp_max)}°</span>
+                  <span className="temp-min">{Math.round(day.temp_min)}°</span>
+                </div>
+                <div className="weather-desc">{day.weather.description}</div>
+                {index === 0 && <div className="view-details">Voir détail</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
