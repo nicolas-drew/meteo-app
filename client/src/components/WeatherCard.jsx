@@ -14,7 +14,8 @@ const WeatherCard = ({ weatherData }) => {
   };
 
   const getWeatherIcon = (iconCode) => {
-    return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+    const dayIconCode = iconCode.replace("n", "d");
+    return `https://openweathermap.org/img/wn/${dayIconCode}@2x.png`;
   };
 
   return (

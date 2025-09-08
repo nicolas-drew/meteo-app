@@ -72,7 +72,10 @@ const WeatherMap = () => {
                 {weatherData.weather?.[0]?.description}
               </div>
               <img
-                src={`https://openweathermap.org/img/wn/${weatherData.weather?.[0]?.icon}@2x.png`}
+                src={`https://openweathermap.org/img/wn/${weatherData.weather?.[0]?.icon?.replace(
+                  "n",
+                  "d"
+                )}@2x.png`}
                 alt={weatherData.weather?.[0]?.description || ""}
               />
               <div className="details">
