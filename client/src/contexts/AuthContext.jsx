@@ -15,6 +15,7 @@ const authReducer = (state, action) => {
         user: action.payload.user,
         token: action.payload.token,
         error: null,
+        isInitialized: true,
       };
     case "ERROR":
       return {
@@ -24,6 +25,7 @@ const authReducer = (state, action) => {
         isAuthenticated: false,
         user: null,
         token: null,
+        isInitialized: true,
       };
     case "LOGOUT":
       return {
@@ -32,6 +34,13 @@ const authReducer = (state, action) => {
         user: null,
         token: null,
         error: null,
+        loading: false,
+        isInitialized: true,
+      };
+    case "INITIALIZE_COMPLETE":
+      return {
+        ...state,
+        isInitialized: true,
         loading: false,
       };
     case "UPDATE_USER":
@@ -55,10 +64,36 @@ const initialState = {
   token: null,
   loading: false,
   error: null,
+  isInitialized: false,
 };
 
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+
+  // Appliquer le thème basé sur les préférences utilisateur
+  useEffect(() => {
+    if (state.user?.preferences?.theme) {
+      const theme = state.user.preferences.theme;
+      if (theme === "auto") {
+        // Détecter le thème système
+        const systemDarkMode = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        document.body.className = systemDarkMode ? "dark" : "light";
+      } else {
+        document.body.className = theme;
+      }
+    } else if (state.isInitialized && !state.isAuthenticated) {
+      // Si pas connecté, utiliser le thème sauvegardé localement
+      const savedTheme = localStorage.getItem("darkMode");
+      const darkMode = savedTheme ? JSON.parse(savedTheme) : false;
+      document.body.className = darkMode ? "dark" : "light";
+    }
+  }, [
+    state.user?.preferences?.theme,
+    state.isInitialized,
+    state.isAuthenticated,
+  ]);
 
   // Vérifier le token au chargement de l'app
   useEffect(() => {
@@ -77,6 +112,9 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("authToken");
           dispatch({ type: "LOGOUT" });
         }
+      } else {
+        // Pas de token, on marque comme initialisé
+        dispatch({ type: "INITIALIZE_COMPLETE" });
       }
     };
 

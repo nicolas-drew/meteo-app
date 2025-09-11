@@ -11,7 +11,7 @@ const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, updateUser } = useAuth();
+  const { user, isAuthenticated, updateUser, isInitialized } = useAuth(); // Ajout de isInitialized
   const [favorites, setFavorites] = useState([]);
   const [favoriteWeathers, setFavoriteWeathers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -20,19 +20,20 @@ const Profile = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeTab, setActiveTab] = useState("favorites");
 
-  // Rediriger si pas connecté
+  // Rediriger si pas connecté - SEULEMENT après initialisation
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isInitialized && !isAuthenticated) {
       navigate("/login");
       return;
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isInitialized, navigate]);
 
+  // Ne charger les favoris que si l'utilisateur est authentifié
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && isInitialized) {
       loadFavorites();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isInitialized]);
 
   useEffect(() => {
     if (favorites.length > 0) {
@@ -171,14 +172,45 @@ const Profile = () => {
           [key]: value,
         },
       });
+
+      // Si c'est un changement d'unités, recharger les données météo
+      if (key === "units") {
+        await fetchFavoritesWeather();
+      }
+
+      // Si c'est un changement de thème, l'appliquer immédiatement
+      if (key === "theme") {
+        if (value === "auto") {
+          const systemDarkMode = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          ).matches;
+          document.body.className = systemDarkMode ? "dark" : "light";
+        } else {
+          document.body.className = value;
+        }
+      }
     } catch (error) {
       console.error("Erreur mise à jour préférence:", error);
       alert("Erreur lors de la mise à jour");
     }
   };
 
+  // Afficher un loader pendant l'initialisation
+  if (!isInitialized) {
+    return (
+      <div className="app-container">
+        <Navbar />
+        <main className="main-content">
+          <div className="loading">Chargement...</div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Si pas authentifié après initialisation, le useEffect va rediriger
   if (!isAuthenticated) {
-    return null; // ou un loader
+    return null;
   }
 
   if (loading) {
@@ -238,7 +270,7 @@ const Profile = () => {
                         setShowSuggestions(true)
                       }
                       onBlur={() =>
-                        setTimeout(() => setShowSuggestions(false), 150)
+                        setTimeout(() => setShowSuggestions(false), 200)
                       }
                     />
                     {showSuggestions && suggestions.length > 0 && (
@@ -246,7 +278,10 @@ const Profile = () => {
                         {suggestions.map((suggestion, idx) => (
                           <li
                             key={idx}
-                            onMouseDown={() => addFavorite(suggestion)}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              addFavorite(suggestion);
+                            }}
                           >
                             {suggestion}
                           </li>

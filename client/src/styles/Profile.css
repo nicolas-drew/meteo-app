@@ -10,7 +10,7 @@
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .profile-header {
@@ -86,7 +86,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Section ajout favori */
@@ -98,6 +98,8 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   flex-shrink: 0;
+  position: relative;
+  z-index: 20;
 }
 
 .add-favorite-section h3 {
@@ -108,6 +110,7 @@
 
 .input-container {
   position: relative;
+  z-index: 30;
 }
 
 .input-container input {
@@ -160,7 +163,7 @@
   background-color: #f8f9fa;
 }
 
-/* Grille des favoris */
+/* 🔥 CORRECTION - Grille des favoris avec scroll horizontal */
 .favorites-grid {
   display: flex;
   gap: 1rem;
@@ -169,27 +172,32 @@
   overflow-y: hidden;
   padding: 1rem 0;
   min-height: 0;
-  z-index: -1;
+  /* Amélioration du scroll */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* Amélioration de la scrollbar */
 .favorites-grid::-webkit-scrollbar {
-  height: 6px;
+  height: 8px;
 }
 
 .favorites-grid::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .favorites-grid::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
 }
 
 .favorites-grid::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
 
+/* 🔥 CORRECTION - Cards avec z-index et pointer-events */
 .favorite-card {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -200,6 +208,10 @@
   height: fit-content;
   min-width: 280px;
   flex-shrink: 0;
+  position: relative;
+  /* 🔥 Correction pour les clics */
+  pointer-events: auto;
+  z-index: 10;
 }
 
 .favorite-card:hover {
@@ -220,6 +232,7 @@
   font-weight: 600;
 }
 
+/* 🔥 CORRECTION - Bouton supprimer avec z-index élevé */
 .remove-btn {
   background: none;
   border: none;
@@ -231,11 +244,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
 }
 
 .remove-btn:hover {
   background: rgba(255, 107, 107, 0.1);
   transform: scale(1.1);
+}
+
+.remove-btn:active {
+  transform: scale(0.95);
 }
 
 .weather-info {
@@ -280,6 +300,7 @@
   opacity: 0.7;
 }
 
+/* 🔥 CORRECTION - Bouton voir détail avec z-index élevé */
 .view-detail-btn {
   display: flex;
   align-items: center;
@@ -295,11 +316,18 @@
   font-size: 0.95rem;
   font-weight: 500;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 50;
+  pointer-events: auto;
 }
 
 .view-detail-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.view-detail-btn:active {
+  transform: translateY(0);
 }
 
 /* Message vide */
@@ -455,6 +483,38 @@ body.dark .btn-secondary {
 
 body.dark .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* 🔥 CORRECTION - Indicateurs de scroll avec z-index adapté */
+.scroll-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.scroll-indicator:hover {
+  opacity: 1;
+}
+
+.scroll-indicator.left {
+  left: 10px;
+}
+
+.scroll-indicator.right {
+  right: 10px;
 }
 
 /* Responsive */
