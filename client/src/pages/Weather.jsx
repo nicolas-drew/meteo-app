@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import WeatherCard from "../components/WeatherCard";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useAuth } from "../contexts/AuthContext";
 
 const Weather = () => {
   const { city } = useParams();
@@ -12,14 +13,24 @@ const Weather = () => {
   const [error, setError] = useState(null);
   const [debugWeather, setDebugWeather] = useState("");
 
+  const { user } = useAuth();
+
   useEffect(() => {
     fetchWeatherData(city);
   }, [city]);
+
+  // Recharger les données quand les préférences changent
+  useEffect(() => {
+    if (weatherData && user?.preferences?.units && city) {
+      fetchWeatherData(city);
+    }
+  }, [user?.preferences?.units]);
 
   const fetchWeatherData = async (cityName) => {
     try {
       const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
+      // Toujours utiliser metric pour l'API, la conversion se fait côté client
       const currentResponse = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric&lang=fr`
       );

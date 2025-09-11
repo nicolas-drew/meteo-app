@@ -6,12 +6,14 @@ import "../styles/Profile.css";
 import { FaHeart, FaTrash, FaEye, FaUser, FaCog } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { userAPI } from "../services/api";
+import { useTemperature } from "../utils/temperature";
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, updateUser, isInitialized } = useAuth(); // Ajout de isInitialized
+  const { user, isAuthenticated, updateUser, isInitialized } = useAuth();
+  const { formatTemperature } = useTemperature(user);
   const [favorites, setFavorites] = useState([]);
   const [favoriteWeathers, setFavoriteWeathers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,6 @@ const Profile = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeTab, setActiveTab] = useState("favorites");
 
-  // Rediriger si pas connecté - SEULEMENT après initialisation
   useEffect(() => {
     if (isInitialized && !isAuthenticated) {
       navigate("/login");
@@ -39,7 +40,7 @@ const Profile = () => {
     if (favorites.length > 0) {
       fetchFavoritesWeather();
     }
-  }, [favorites]);
+  }, [favorites, user?.preferences?.units]); // Recharger quand les unités changent
 
   const loadFavorites = async () => {
     try {
@@ -55,6 +56,7 @@ const Profile = () => {
   const fetchFavoritesWeather = async () => {
     const weatherPromises = favorites.map(async (city) => {
       try {
+        // Toujours utiliser metric pour l'API, la conversion se fait côté client
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
             city.cityName
@@ -173,10 +175,8 @@ const Profile = () => {
         },
       });
 
-      // Si c'est un changement d'unités, recharger les données météo
-      if (key === "units") {
-        await fetchFavoritesWeather();
-      }
+      // Si c'est un changement d'unités, les données météo se rechargeront automatiquement
+      // grâce au useEffect qui surveille user?.preferences?.units
 
       // Si c'est un changement de thème, l'appliquer immédiatement
       if (key === "theme") {
@@ -329,7 +329,7 @@ const Profile = () => {
                                 className="weather-icon"
                               />
                               <div className="temp">
-                                {Math.round(weatherData.main.temp)}°C
+                                {formatTemperature(weatherData.main.temp)}
                               </div>
                             </div>
                             <div className="weather-description">
@@ -338,7 +338,7 @@ const Profile = () => {
                             <div className="weather-details">
                               <span>
                                 Ressenti:{" "}
-                                {Math.round(weatherData.main.feels_like)}°C
+                                {formatTemperature(weatherData.main.feels_like)}
                               </span>
                               <span>
                                 Humidité: {weatherData.main.humidity}%

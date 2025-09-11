@@ -9,6 +9,8 @@ import {
 } from "react-leaflet";
 import { Link } from "react-router-dom";
 import { IoMdArrowRoundForward } from "react-icons/io";
+import { useAuth } from "../contexts/AuthContext";
+import { useTemperature } from "../utils/temperature";
 
 const MapClickHandler = ({ onMapClick }) => {
   useMapEvents({
@@ -25,6 +27,9 @@ const WeatherMap = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [weatherLayer, setWeatherLayer] = useState("temp");
+
+  const { user } = useAuth();
+  const { formatTemperature } = useTemperature(user);
 
   const handleMapClick = async (latlng) => {
     setSelectedPosition([latlng.lat, latlng.lng]);
@@ -67,7 +72,9 @@ const WeatherMap = () => {
           ) : weatherData ? (
             <div className="weather-info">
               <h2>{weatherData.name}</h2>
-              <div className="temp">{Math.round(weatherData.main.temp)}°C</div>
+              <div className="temp">
+                {formatTemperature(weatherData.main.temp)}
+              </div>
               <div className="description">
                 {weatherData.weather?.[0]?.description}
               </div>
@@ -79,7 +86,9 @@ const WeatherMap = () => {
                 alt={weatherData.weather?.[0]?.description || ""}
               />
               <div className="details">
-                <p>Ressenti: {Math.round(weatherData.main.feels_like)}°C</p>
+                <p>
+                  Ressenti: {formatTemperature(weatherData.main.feels_like)}
+                </p>
                 <p>Humidité: {weatherData.main.humidity}%</p>
                 <p>
                   Vent: {Math.round((weatherData.wind?.speed || 0) * 3.6)} km/h
@@ -147,7 +156,7 @@ const WeatherMap = () => {
                 <div>
                   <strong>{weatherData.name}</strong>
                   <br />
-                  {Math.round(weatherData.main.temp)}°C -{" "}
+                  {formatTemperature(weatherData.main.temp)} -{" "}
                   {weatherData.weather?.[0]?.description}
                 </div>
               ) : (

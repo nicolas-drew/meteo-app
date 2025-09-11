@@ -1,8 +1,12 @@
 import "../styles/WeatherCard.css";
 import "../styles/WeatherAnim.css";
+import { useAuth } from "../contexts/AuthContext";
+import { useTemperature } from "../utils/temperature";
 
 const WeatherCard = ({ weatherData }) => {
   const { current, forecast } = weatherData;
+  const { user } = useAuth();
+  const { formatTemperature } = useTemperature(user);
 
   const formatTime = (timestamp) => {
     return new Date(timestamp * 1000).toLocaleDateString("fr-FR", {
@@ -22,7 +26,9 @@ const WeatherCard = ({ weatherData }) => {
     <div className="weather-card">
       <div className="weather-main">
         <h1 className="city-name">{current.name}</h1>
-        <div className="temperature">{Math.round(current.main.temp)}°C</div>
+        <div className="temperature">
+          {formatTemperature(current.main.temp)}
+        </div>
         <div className="weather-description">
           {current.weather[0].description}
         </div>
@@ -43,7 +49,7 @@ const WeatherCard = ({ weatherData }) => {
                 className="weather-icon-small"
               />
               <div className="forecast-temp">
-                {Math.round(item.main.temp)}°C
+                {formatTemperature(item.main.temp)}
               </div>
               <div className="forecast-time">
                 {index === 0 ? "Maintenant" : formatTime(item.dt)}

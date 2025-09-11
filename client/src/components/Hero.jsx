@@ -3,6 +3,8 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useTemperature } from "../utils/temperature";
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
@@ -17,34 +19,49 @@ const Hero = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [highlightIndex, setHighlightIndex] = useState(-1);
 
+  // Récupérer les préférences utilisateur
+  const { user } = useAuth();
+  const { formatTemperature, getUnitsForAPI } = useTemperature(user);
+
   // Demander la localisation seulement la première fois
   useEffect(() => {
     const hasAskedLocationBefore = localStorage.getItem("hasAskedLocation");
     const savedCity = localStorage.getItem("userCity");
 
     if (!hasAskedLocationBefore) {
-      // Première visite : demander la localisation
       handleLocationClick();
       localStorage.setItem("hasAskedLocation", "true");
     } else if (savedCity) {
-      // Visites suivantes : utiliser la ville sauvegardée
       setCity(savedCity);
       fetchWeatherData(savedCity);
     }
   }, []);
 
+  // Recharger les données météo quand les préférences changent
+  useEffect(() => {
+    if (weatherData && user?.preferences?.units) {
+      // Recharger les données avec les nouvelles unités
+      if (selectedCity) {
+        fetchWeatherData({ lat: selectedCity.lat, lon: selectedCity.lon });
+      } else if (city) {
+        fetchWeatherData(city);
+      }
+    }
+  }, [user?.preferences?.units]);
+
   // Fonction pour récupérer les données météo
   const fetchWeatherData = async (cityArg) => {
     try {
       let currentResponse, forecastResponse;
+      const units = getUnitsForAPI(); // Toujours 'metric' pour l'API
 
       if (typeof cityArg === "object" && cityArg?.lat && cityArg?.lon) {
         const { lat, lon } = cityArg;
         currentResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=fr`
+          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${units}&lang=fr`
         );
         forecastResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=fr`
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${units}&lang=fr`
         );
       } else {
         const cityName = cityArg;
@@ -55,12 +72,12 @@ const Hero = () => {
         currentResponse = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
             cityName
-          )}&appid=${API_KEY}&units=metric&lang=fr`
+          )}&appid=${API_KEY}&units=${units}&lang=fr`
         );
         forecastResponse = await fetch(
           `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
             cityName
-          )}&appid=${API_KEY}&units=metric&lang=fr`
+          )}&appid=${API_KEY}&units=${units}&lang=fr`
         );
       }
 
@@ -130,7 +147,7 @@ const Hero = () => {
       } else {
         setWeatherData(null);
       }
-    }, 500); // Délai pour éviter trop de requêtes
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [city]);
@@ -163,7 +180,6 @@ const Hero = () => {
             "";
 
           setCity(userCity);
-          // Sauvegarder la ville dans localStorage
           if (userCity) {
             localStorage.setItem("userCity", userCity);
           }
@@ -181,7 +197,6 @@ const Hero = () => {
         switch (error.code) {
           case error.PERMISSION_DENIED:
             errorMessage = "L'accès à la localisation a été refusé";
-            // Marquer que l'utilisateur a refusé pour ne pas redemander
             localStorage.setItem("locationDenied", "true");
             break;
           case error.POSITION_UNAVAILABLE:
@@ -237,7 +252,6 @@ const Hero = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (city.trim()) {
-      // Sauvegarder la ville recherchée
       localStorage.setItem("userCity", city.trim());
       navigate(`/weather/${encodeURIComponent(city.trim())}`);
     }
@@ -297,7 +311,7 @@ const Hero = () => {
       <form
         className="search-bar"
         onSubmit={(e) => {
-          e.preventDefault(); // 🔒 bloque le submit
+          e.preventDefault();
         }}
       >
         <button
@@ -333,7 +347,7 @@ const Hero = () => {
                 prev > 0 ? prev - 1 : suggestions.length - 1
               );
             } else if (e.key === "Enter") {
-              e.preventDefault(); // évite submit
+              e.preventDefault();
               if (highlightIndex >= 0 && suggestions[highlightIndex]) {
                 handleSuggestionClick(suggestions[highlightIndex]);
               }
@@ -356,8 +370,6 @@ const Hero = () => {
           </ul>
         )}
       </form>
-
-      {/* Affichage des prévisions météo */}
 
       {weatherData && (
         <div className="weather-preview">
@@ -385,8 +397,12 @@ const Hero = () => {
                   className="weather-icon"
                 />
                 <div className="temperature-range">
-                  <span className="temp-max">{Math.round(day.temp_max)}°</span>
-                  <span className="temp-min">{Math.round(day.temp_min)}°</span>
+                  <span className="temp-max">
+                    {formatTemperature(day.temp_max)}
+                  </span>
+                  <span className="temp-min">
+                    {formatTemperature(day.temp_min)}
+                  </span>
                 </div>
                 <div className="weather-desc">{day.weather.description}</div>
                 {index === 0 && <div className="view-details">Voir détail</div>}
