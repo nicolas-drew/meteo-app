@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import WeatherCard from "../components/WeatherCard";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import WeatherBackground from "../components/WeatherBackground";
 import { useAuth } from "../contexts/AuthContext";
 
 const Weather = () => {
@@ -108,7 +109,8 @@ const Weather = () => {
 
   return (
     <div className="app-container">
-      <main className={`main-content weather-page ${weatherMain}`}>
+      <main className={`main-content weather-page ${weatherMain}`} style={{ position: 'relative', zIndex: 0 }}>
+        <WeatherBackground weather={weatherMain} />
         {/* --- Boutons temporaires pour tester les backgrounds --- */}
         <div style={{ position: "absolute", top: 15, right: 15 }}>
           {weatherTypes.map((type) => (
