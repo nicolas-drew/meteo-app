@@ -12,7 +12,7 @@ const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, updateUser, isInitialized } = useAuth();
+  const { user, isAuthenticated, updateUser, isInitialized, logout } = useAuth();
   const { formatTemperature } = useTemperature(user);
   const [favorites, setFavorites] = useState([]);
   const [favoriteWeathers, setFavoriteWeathers] = useState({});
@@ -160,6 +160,23 @@ const Profile = () => {
   const getWeatherIcon = (iconCode) => {
     const dayIconCode = iconCode.replace("n", "d");
     return `https://openweathermap.org/img/wn/${dayIconCode}@2x.png`;
+  };
+
+  const handleDeleteAccount = async () => {
+    if (
+      window.confirm(
+        "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
+      )
+    ) {
+      try {
+        await userAPI.deleteAccount();
+        logout();
+        navigate("/");
+      } catch (error) {
+        console.error("Erreur suppression compte:", error);
+        alert("Erreur lors de la suppression du compte");
+      }
+    }
   };
 
   const updatePreference = async (key, value) => {
@@ -415,7 +432,12 @@ const Profile = () => {
                   <button className="btn-secondary">
                     Changer le mot de passe
                   </button>
-                  <button className="btn-danger">Supprimer le compte</button>
+                  <button
+                    className="btn-danger"
+                    onClick={handleDeleteAccount}
+                  >
+                    Supprimer le compte
+                  </button>
                 </div>
               </div>
             </div>

@@ -81,8 +81,3 @@
   font-size: 0.9rem;
   font-style: italic;
 }
-
-/* Dark mode adjustments if parent has dark mode class, 
-   assuming standard dark mode implementation might be added later 
-   or handled via context/global styles. 
-   For now, keeping it simple and clean. */

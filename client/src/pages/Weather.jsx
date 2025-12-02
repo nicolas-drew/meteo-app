@@ -110,6 +110,25 @@ const Weather = () => {
   return (
     <div className="app-container">
       <main className={`main-content weather-page ${weatherMain}`} style={{ position: 'relative', zIndex: 0 }}>
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "20px",
+            zIndex: 100,
+            padding: "10px 20px",
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            color: "white",
+            border: "1px solid white",
+            borderRadius: "5px",
+            cursor: "pointer",
+            backdropFilter: "blur(5px)",
+            fontWeight: "bold",
+          }}
+        >
+          Retour
+        </button>
         <WeatherBackground weather={weatherMain} />
         {/* --- Boutons temporaires pour tester les backgrounds --- */}
         <div style={{ position: "absolute", top: 15, right: 15 }}>
