@@ -13,11 +13,12 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo">Weather</div>
-
-      <div className="navbar-center">
-        <Link to="/">Accueil</Link>
-        <Link to="/map">Carte</Link>
+      <div className="navbar-left">
+        <div className="navbar-logo">Weather</div>
+        <div className="navbar-links">
+          <Link to="/">Accueil</Link>
+          <Link to="/map">Carte</Link>
+        </div>
       </div>
 
       <div className="navbar-actions">

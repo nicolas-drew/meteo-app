@@ -12,29 +12,24 @@ const Legal = () => {
           <h1>Mentions Légales</h1>
 
           <section className="legal-section">
-            <h2>1. Informations légales</h2>
+            <h2>1. Éditeur du site</h2>
             <p>
-              <strong>Nom du site :</strong> Weather App
+              Ce site est un projet personnel à but pédagogique et démonstratif.
               <br />
-              <strong>Propriétaire :</strong> [Votre nom ou société]
+              <strong>Développeur :</strong> Nicolas Drew
               <br />
-              <strong>Siège social :</strong> [Votre adresse]
+              <strong>Statut :</strong> Projet étudiant / Portfolio
               <br />
-              <strong>Téléphone :</strong> [Votre numéro]
-              <br />
-              <strong>Email :</strong> contact@weather-app.com
+              <strong>Contact :</strong> Via le formulaire de contact du site
             </p>
           </section>
 
           <section className="legal-section">
             <h2>2. Hébergement</h2>
             <p>
-              Ce site est hébergé par :<br />
-              <strong>Hébergeur :</strong> [Nom de l'hébergeur]
+              Ce site est actuellement hébergé en local (localhost) à des fins de développement et de test.
               <br />
-              <strong>Adresse :</strong> [Adresse de l'hébergeur]
-              <br />
-              <strong>Téléphone :</strong> [Numéro de l'hébergeur]
+              Aucun hébergeur tiers n'est utilisé pour cette version de démonstration.
             </p>
           </section>
 
