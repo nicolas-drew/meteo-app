@@ -9,13 +9,22 @@
   display: flex;
   flex-direction: column;
   margin: auto;
-  width: 340px;
+  width: 100%;
+  max-width: 340px;
   gap: 18px;
   padding: 28px;
   border-radius: 16px;
   background: linear-gradient(120deg, #e3f6fd 70%, #fffbe7 100%);
   border: 5px solid #ffffff;
   box-shadow: 0 8px 32px rgba(79, 172, 254, 0.4);
+}
+
+@media (max-width: 480px) {
+  .login-form,
+  .signup-form {
+    padding: 20px;
+    width: 90%;
+  }
 }
 
 .title-form {

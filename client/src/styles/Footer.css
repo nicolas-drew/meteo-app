@@ -21,3 +21,21 @@
 .footer a:hover {
   text-decoration: underline;
 }
+
+@media screen and (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .footer-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer a {
+    margin-left: 0;
+  }
+}

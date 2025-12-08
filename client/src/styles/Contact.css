@@ -81,3 +81,13 @@
   font-size: 0.9rem;
   font-style: italic;
 }
+
+@media (max-width: 480px) {
+  .contact-card {
+    padding: 2rem;
+  }
+  
+  .contact-card h1 {
+    font-size: 2rem;
+  }
+}

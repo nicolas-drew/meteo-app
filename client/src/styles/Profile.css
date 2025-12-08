@@ -523,7 +523,8 @@ body.dark .btn-secondary:hover {
 @media (max-width: 768px) {
   .profile-container {
     padding: 0.75rem;
-    height: calc(100vh - 140px);
+    height: auto; /* Allow height to grow */
+    min-height: calc(100vh - 140px);
   }
 
   .profile-header h1 {
@@ -546,11 +547,15 @@ body.dark .btn-secondary:hover {
   }
 
   .favorites-grid {
-    gap: 0.75rem;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: visible; /* Let the page scroll */
+    gap: 1rem;
   }
 
   .favorite-card {
-    min-width: 250px;
+    width: 100%;
+    min-width: auto;
   }
 
   .account-actions {

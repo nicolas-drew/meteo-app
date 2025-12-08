@@ -169,3 +169,42 @@
 .layer-switcher button:hover {
   background: #d9d7f7;
 }
+
+@media (max-width: 768px) {
+  .weather-map-container {
+    width: 100%;
+    height: calc(100vh - 80px);
+    margin: 0;
+  }
+
+  .weather-map {
+    height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+
+  .weather-sidebar {
+    top: 10px;
+    right: 10px;
+    left: auto;
+    width: 180px;
+    transform: none;
+    bottom: auto;
+    padding: 10px;
+  }
+
+  .layer-switcher {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 5px;
+  }
+  
+  .layer-switcher button {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+}
