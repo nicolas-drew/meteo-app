@@ -192,14 +192,14 @@
     flex-direction: column;
     gap: 1.5rem;
   }
-  
+
   body.light .navbar-content {
-      background: rgba(255, 255, 255, 0.4);
-      color: #202020;
+    background: rgba(255, 255, 255, 0.4);
+    color: #202020;
   }
-  
+
   body.dark .navbar-content {
-      background: rgba(13, 34, 74, 0.6);
-      color: white;
+    background: rgba(13, 34, 74, 0.6);
+    color: white;
   }
 }
